@@ -14,6 +14,8 @@ import joblib
 # Load dataset
 file_path = "IRIS.csv"
 iris_df = pd.read_csv(file_path)
+iris_df_raw = pd.read_csv(file_path)
+iris_df = iris_df_raw.copy()
 
 # Encode target labels
 le = LabelEncoder()
@@ -72,6 +74,31 @@ petal_width = st.slider("Petal Width (cm)", float(X['petal_width'].min()), float
 if st.button("Predict"):
     species = predict_species(sepal_length, sepal_width, petal_length, petal_width)
     st.success(f"🌼 The predicted species is: **{species}**")
+
+# ---------------------------
+# Data Visualization
+# ---------------------------
+st.subheader("📈 Data Visualization")
+
+# Pie Chart of Species Distribution
+st.write("#### Pie Chart of Species Distribution")
+fig_pie, ax_pie = plt.subplots()
+species_counts = iris_df_raw['species'].value_counts()
+ax_pie.pie(species_counts, labels=species_counts.index, autopct='%1.1f%%', startangle=90)
+ax_pie.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+st.pyplot(fig_pie)
+
+# Scatter Plot of Features
+st.write("#### Scatter Plot of Features")
+col1, col2 = st.columns(2)
+with col1:
+    x_axis = st.selectbox("Select X-axis Feature", X.columns, index=0)
+with col2:
+    y_axis = st.selectbox("Select Y-axis Feature", X.columns, index=2)
+
+fig_scatter, ax_scatter = plt.subplots()
+sns.scatterplot(data=iris_df_raw, x=x_axis, y=y_axis, hue='species', ax=ax_scatter)
+st.pyplot(fig_scatter)
 
 # Show model accuracy comparison
 st.subheader("📊 Model Performance")
